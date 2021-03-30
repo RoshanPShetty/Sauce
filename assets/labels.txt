@@ -1,0 +1,9 @@
+0 One Piece
+1 Oregairu
+2 Fairy Tail
+3 Attack on Titan
+4 Dragon Ball
+5 Death Note
+6 Sword Art Online
+7 Full Metal Alchemist
+8 Detective Conan
