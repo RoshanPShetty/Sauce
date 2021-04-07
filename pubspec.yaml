@@ -24,7 +24,8 @@ dependencies:
   flutter:
     sdk: flutter
   tflite: ^1.1.1
-  image_picker: ^0.6.7+22
+  image_picker:
+    ^0.6.7+22
     #camera: ^0.8.1
   fluttertoast: ^8.0.3
 
