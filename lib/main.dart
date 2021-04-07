@@ -1,9 +1,13 @@
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tflite/tflite.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 
-void main() {
+
+Future<void> main() async {
+
   runApp(MyApp());
 }
 
@@ -21,15 +25,21 @@ class MyApp extends StatelessWidget {
 }
 
 class HomePage extends StatefulWidget {
+
+
+  HomePage();
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+
   bool _isLoading;
   File _image;
   final picker = ImagePicker();
   List _output;
+  //bool isCamera= false;
+  String  label;
 
   @override
   void initState() {
@@ -40,6 +50,15 @@ class _HomePageState extends State<HomePage> {
         _isLoading = false;
       }
     });
+  }
+  void _showToast(String output)
+  {
+    Fluttertoast.showToast(msg: "${output}",toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 10,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
   }
 
   @override
@@ -53,38 +72,56 @@ class _HomePageState extends State<HomePage> {
       body: _isLoading
           ? Text("No Image Selected")
           : SingleChildScrollView(
-              child: Center(
-                child: Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      _image == null
-                          ? Container()
-                          : SizedBox(
-                              height: 40,
-                            ),
-                      Image.file(_image),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      _output == null
-                          ? Text("")
-                          : Text(
-                              "${_output[0]["label"]}",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            )
-                    ],
-                  ),
+        child: Center(
+          child: Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                _image == null
+                    ? Container()
+                    : SizedBox(
+                  height: 40,
                 ),
-              ),
+                _image == null? Container():Image.file(_image),
+                //Image.file(_image),
+                SizedBox(
+                  height: 16,
+                ),
+                _output == null
+                    ? Text("")
+                    : Text(
+                  "${_output[0]["label"]}",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                /* Fluttertoast.showToast(
+                          msg:  "${_output[0]["label"]}",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.CENTER,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          fontSize: 16.0
+                      ),*/
+
+
+
+              ],
             ),
+          ),
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.purple[200],
-        onPressed: getImage,
+        onPressed:() {
+          //isCamera=false;
+          getImage();
+        },
+
         tooltip: 'Pick Image',
         child: Icon(Icons.image),
       ),
+
     );
   }
 
@@ -95,12 +132,17 @@ class _HomePageState extends State<HomePage> {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
         _isLoading = true;
+        runModelOnImage(File(pickedFile.path));
       } else {
         print('No image selected.');
       }
     });
-    runModelOnImage(File(pickedFile.path));
+
   }
+  /* Future realTimeClassification( ) async {
+   //output= await Camera();
+
+  }*/
 
   runModelOnImage(File image) async {
     var output = await Tflite.runModelOnImage(
@@ -112,6 +154,8 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _isLoading = false;
       _output = output;
+      label=_output[0]["label"];
+      _showToast(label);
     });
   }
 
